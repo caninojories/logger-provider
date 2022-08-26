@@ -1,4 +1,4 @@
-# Intervue.ai Logger Provider
+# Intervu.ai Logger Provider
 
 ## Description
 
