@@ -6,7 +6,7 @@ import {
   ElasticsearchTransport,
   ElasticsearchTransportOptions,
 } from 'winston-elasticsearch';
-import { Client, ClientOptions } from '@elastic/elasticsearch';
+import { ClientOptions } from '@elastic/elasticsearch';
 
 type LoggerProviderOptions = {
   level?: string;
@@ -18,17 +18,22 @@ export class LoggerProviderModule {
     level = 'info',
     esClient = {},
   }: LoggerProviderOptions): LoggerService {
+    let transport: any = new winston.transports.Console({
+      format: winston.format.combine(ecsFormat({ convertReqRes: true })),
+      level,
+    });
     const options: ElasticsearchTransportOptions = {
       level,
       format: winston.format.combine(ecsFormat({ convertReqRes: true })),
+      clientOpts: { node: 'http://localhost:9200' },
     };
 
     if (Object.keys(esClient).length) {
-      options.client = new Client(esClient);
+      transport = new ElasticsearchTransport(options);
     }
 
     return WinstonModule.createLogger({
-      transports: [new ElasticsearchTransport(options)],
+      transports: [transport],
     });
   }
 }
