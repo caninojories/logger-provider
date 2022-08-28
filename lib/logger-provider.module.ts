@@ -1,4 +1,4 @@
-import { DynamicModule, LoggerService } from '@nestjs/common';
+import { LoggerService } from '@nestjs/common';
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import ecsFormat = require('@elastic/ecs-winston-format');
@@ -9,14 +9,17 @@ import {
 
 type LoggerProviderOptions = {
   level?: string;
+  hasConsole?: boolean;
   esClient?: ElasticsearchTransportOptions;
 };
 
 export class LoggerProviderModule {
   static register({
     level = 'info',
+    hasConsole = true,
     esClient = {},
-  }: LoggerProviderOptions): DynamicModule {
+  }: LoggerProviderOptions): LoggerService {
+    const transportLogger = [];
     let transport: any = new winston.transports.Console({
       format: winston.format.combine(ecsFormat({ convertReqRes: true })),
       level,
@@ -27,12 +30,17 @@ export class LoggerProviderModule {
       ...esClient,
     };
 
-    if (Object.keys(esClient).length) {
-      transport = new ElasticsearchTransport(options);
+    if (hasConsole) {
+      transportLogger.push(transport);
     }
 
-    return WinstonModule.forRoot({
-      transports: [transport],
+    if (Object.keys(esClient).length) {
+      transport = new ElasticsearchTransport(options);
+      transportLogger.push(transport);
+    }
+
+    return WinstonModule.createLogger({
+      transports: transportLogger,
     });
   }
 }
