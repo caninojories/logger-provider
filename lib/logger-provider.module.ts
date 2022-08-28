@@ -24,7 +24,7 @@ export class LoggerProviderModule {
     const options: ElasticsearchTransportOptions = {
       level,
       format: winston.format.combine(ecsFormat({ convertReqRes: true })),
-      clientOpts: { node: 'http://localhost:9200' },
+      ...esClient
     };
 
     if (Object.keys(esClient).length) {
