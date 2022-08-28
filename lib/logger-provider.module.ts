@@ -7,17 +7,15 @@ import {
   ElasticsearchTransportOptions,
 } from 'winston-elasticsearch';
 
-type esClient = ElasticsearchTransportOptions;
-
 type LoggerProviderOptions = {
   level?: string;
-  esClient?: esClient;
+  esClient?: ElasticsearchTransportOptions;
 };
 
 export class LoggerProviderModule {
   static register({
     level = 'info',
-    esClient,
+    esClient = {},
   }: LoggerProviderOptions): LoggerService {
     let transport: any = new winston.transports.Console({
       format: winston.format.combine(ecsFormat({ convertReqRes: true })),
