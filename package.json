@@ -1,6 +1,6 @@
 {
   "name": "logger-provider",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Intervu.ai logger",
   "author": "Jo-Ries Canino",
   "private": true,
